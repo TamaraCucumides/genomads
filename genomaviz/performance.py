@@ -73,7 +73,7 @@ def hiring_plot(df, fit, hired_col='Estado', hired_status='HIRED', kind='pie'):
         pass
     elif kind == 'bar':
         plt.figure()
-        sns.barplot(counts, order=["Recomendado", "Quizás", "No recomendado"], palette=traffic_light)
+        sns.barplot(recomendation, order=["Recomendado", "Quizás", "No recomendado"], palette=traffic_light)
         plt.show()
         #TODO: add barplot with hue status (hired vs all, but with proportion instead of count)
     else:
