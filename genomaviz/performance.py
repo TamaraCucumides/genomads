@@ -2,7 +2,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-from colors import *
+from genomaviz.colors import *
 
 def hiring_stats(df, fit, hired_col, hired_indicator="HIRED"):
     hired = df[df[hired_col]==hired_indicator]
