@@ -12,7 +12,7 @@ def hiring_stats(df, fit, hired_col, hired_indicator="HIRED"):
     hired_no = len(hired[hired[fit]<=60])
     print(f"REPORTE DE CONTRATACIONES \nFit promedio contratados: {hired_mean_fit}\n\
         Contratados recomendados: {hired_recommended} ({hired_recommended/len(hired)})\n\
-        Contratados quizás: {hired_maybe} ({hired_maybe/len(hired)})\n \
+        Contratados quizás: {hired_maybe} ({hired_maybe/len(hired)})\n\
         Contratados no recomendados: {hired_no} ({hired_no/len(hired)})")
 
 def performance_stats(df, fit, performance, type='binary', convert='binary'):
@@ -64,6 +64,7 @@ def hiring_plot(df, fit, hired_col='Estado', hired_status='HIRED', kind='pie'):
     recomendation = hired.apply(lambda row: _recommendation_col(row, fit), axis=1)
     counts = recomendation.value_counts()
     if kind == 'pie':
+        #TODO: fix color assignation and add legend and title
         plt.figure()
         plt.pie(counts, colors = traffic_light, autopct='%.0f%%')
         plt.show()
@@ -72,7 +73,7 @@ def hiring_plot(df, fit, hired_col='Estado', hired_status='HIRED', kind='pie'):
         pass
     elif kind == 'bar':
         plt.figure()
-        sns.barplot(counts, order=["Recomendado", "Quizás", "No recomendado"], colors=traffic_light)
+        sns.barplot(counts, order=["Recomendado", "Quizás", "No recomendado"], palette=traffic_light)
         plt.show()
         #TODO: add barplot with hue status (hired vs all, but with proportion instead of count)
     else:
