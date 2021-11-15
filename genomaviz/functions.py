@@ -80,6 +80,7 @@ def correlation_plot(data, des, corrs_number=None, partition_corrs=2, thresh=0, 
     sns.axes_style('white')
     sns.set_style('white')
 
+    fig = plt.figure(figsize=(12,10))
     b = sns.barplot(x=veryhot_corrs,y=x,color=paleta_corrs[0])
     sns.barplot(x=hot_corrs,y=x, color=paleta_corrs[1])
     sns.barplot(x=cold_corrs,y=x, color=paleta_corrs[2])
