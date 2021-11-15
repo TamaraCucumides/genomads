@@ -119,3 +119,14 @@ def _recommendation_col(row, fit):
         return "No recomendado"
 
 
+def _get_date_dif(row, col1, col2):
+  if row["date_added"]:
+    if "time"=="day":
+        return (pd.to_datetime(row[col1]) - pd.to_datetime(row[col2])).days
+    elif "time"=="months":
+        return (pd.to_datetime(row[col1]) - pd.to_datetime(row[col2])).month
+    elif "time"=="years":
+        return (pd.to_datetime(row[col1]) - pd.to_datetime(row[col2])).months/12
+  else:
+    return ""
+

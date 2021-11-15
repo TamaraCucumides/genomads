@@ -3,6 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+from genomaviz._utils import *
+
 
 def correlation_plot(data, des, corrs_number=None, partition_corrs=2, thresh=0, method="spearman", activity_code = True):
     """
@@ -95,3 +97,11 @@ def correlation_matrix(data, triangle=False):
     corr = data.corr()
     sns.heatmap(corr, cmap=sns.diverging_palette(0, 255, as_cmap=True), square=True, ax=ax, annot=True)
     plt.show()
+    #TODO: add triangle mode
+
+
+def binned_boxplot(data, x, y, num_bins=4):
+    q1,q2,q3 = data[x].quantile([0.25,0.5,0.75])
+    quartile = data.apply(lambda row: _quartilize_col(row, q1, q2, q3), axis=1)
+    #TODO: plot and annotate bins, add custom amount of bins
+    pass 
