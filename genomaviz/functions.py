@@ -105,4 +105,22 @@ def binned_boxplot(data, x, y, num_bins=4):
     q1,q2,q3 = data[x].quantile([0.25,0.5,0.75])
     quartile = data.apply(lambda row: _quartilize_col(row, q1, q2, q3), axis=1)
     #TODO: plot and annotate bins, add custom amount of bins
-    pass 
+    pass
+    
+
+def freq_matrix(x, y, data):
+    """ TODO: Agregar fila de totales
+    Matriz de frecuencia para dos variables
+    :param x: nombre columna 1
+    :type x: str
+    :param y: nombre columna 2
+    :type y: str
+    :param data: dataframe con columnas a cruzar
+    :type data: pandas DataFrame
+    """
+    matrix = pd.DataFrame()
+    for xi in data[x].unique():
+        count = pd.DataFrame(pd.Series(data.loc[data[x]==xi][y].value_counts(), name=xi))
+        matrix = pd.concat([matrix, count], axis=1)
+    matrix = matrix.fillna(0)
+    return matrix
