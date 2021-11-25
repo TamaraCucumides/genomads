@@ -71,7 +71,7 @@ def correlation_plot(data, des, corrs_number=None, partition_corrs=2, thresh=0, 
 
     if not activity_code:
         return None #fix this with dicts
-"""         try:
+    """    try:
             for trait in range(len(x)):
                 if x[trait] in t2c.keys():
                     x[trait] = x[trait][7:]
