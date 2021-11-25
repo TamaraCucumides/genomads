@@ -2,11 +2,12 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from plotly import graph_objects as go
 
 from genomaviz._utils import *
 
 
-def correlation_plot(data, des, corrs_number=None, partition_corrs=2, thresh=0, method="spearman", activity_code = True):
+def correlation_plot(data, des, corrs_number=None, partition_corrs=2, thresh=0, method="spearman", activity_code = True, size=(8,12)):
     """
     :param data: dataframe con las variables a correlacionar
     :type data: pandas DataFrame
@@ -80,12 +81,11 @@ def correlation_plot(data, des, corrs_number=None, partition_corrs=2, thresh=0, 
     sns.axes_style('white')
     sns.set_style('white')
 
-    fig = plt.figure(figsize=(12,10))
+    fig = plt.figure(figsize=size)
     b = sns.barplot(x=veryhot_corrs,y=x,color=paleta_corrs[0])
     sns.barplot(x=hot_corrs,y=x, color=paleta_corrs[1])
     sns.barplot(x=cold_corrs,y=x, color=paleta_corrs[2])
     sns.barplot(x=verycold_corrs,y=x, color=paleta_corrs[3])
-    plt.show()
 
 def correlation_matrix(data, triangle=False):
     """
@@ -97,7 +97,6 @@ def correlation_matrix(data, triangle=False):
     f, ax = plt.subplots(figsize=(10, 8))
     corr = data.corr()
     sns.heatmap(corr, cmap=sns.diverging_palette(0, 255, as_cmap=True), square=True, ax=ax, annot=True)
-    plt.show()
     #TODO: add triangle mode
 
 
@@ -106,3 +105,18 @@ def binned_boxplot(data, x, y, num_bins=4):
     quartile = data.apply(lambda row: _quartilize_col(row, q1, q2, q3), axis=1)
     #TODO: plot and annotate bins, add custom amount of bins
     pass 
+
+
+def funnel_chart(numbers, n_stages=3, name_stages=["Ingresan a Genomawork", "Completan las actividades", "Tienen variable de salida"]):
+    if len(numbers)!= n_stages:
+        return None
+    fig = go.Figure(go.Funnel(
+    y = name_stages,
+    x = numbers,
+    textposition = "inside",
+    textinfo = "value+percent initial",
+    marker = {"color": ["hotpink", "pink", "hotpink", "pink"]}))
+
+fig.update_layout(
+    paper_bgcolor='rgba(0,0,0,0)',
+    plot_bgcolor='rgba(0,0,0,0)')
