@@ -24,7 +24,7 @@ ht2c = {'BAR2 - Disposición al riesgo': 'AVRRSG',
     'DCE2 - Capacidad para realizar varias tareas a la vez': 'ACRSWT',
     'DCE2 - Rapidez para realizar varias tareas a la vez': 'MULTIV',
     'GNG2 - Duración de la atención': 'CAPATC',
-    'GNG2 - Control de la Impulsividad': 'CTRIMP'}
+    'GNG2 - Control de la impulsividad': 'CTRIMP'}
     
 hc2t = {'AVRRSG': 'BAR2 - Disposición al riesgo',
     'ALTRU': 'DCT2 - Altruismo',
@@ -50,7 +50,7 @@ hc2t = {'AVRRSG': 'BAR2 - Disposición al riesgo',
     'ACRSWT': 'DCE2 - Capacidad para realizar varias tareas a la vez',
     'MULTIV': 'DCE2 - Rapidez para realizar varias tareas a la vez',
     'CAPATC': 'GNG2 - Duración de la atención',
-    'CTRIMP': 'GNG2 - Control de la Impulsividad'}
+    'CTRIMP': 'GNG2 - Control de la impulsividad'}
 
 hc2g = {'AVRRSG': ['Globos', 2],
         'ALTRU': ['Dilema', 3],
@@ -103,7 +103,7 @@ bt2c = {'BAR2 - Disposición al riesgo': 'AVRRSG',
     'DCE2 - Capacidad para realizar varias tareas a la vez': 'ACRSWT',
     'DCE2 - Rapidez para realizar varias tareas a la vez': 'MULTIV',
     'GNG2 - Duración de la atención': 'CAPATC',
-    'GNG2 - Control de la Impulsividad': 'CTRIMP'}
+    'GNG2 - Control de la impulsividad': 'CTRIMP'}
     
 bc2t = {'AVRRSG': 'BAR2 - Disposición al riesgo',
        'ALTRU': 'DCT2 - Altruismo', 'PRPDIF':
@@ -128,7 +128,7 @@ bc2t = {'AVRRSG': 'BAR2 - Disposición al riesgo',
        'ACRSWT': 'DCE2 - Capacidad para realizar varias tareas a la vez',
        'MULTIV': 'DCE2 - Rapidez para realizar varias tareas a la vez',
        'CAPATC': 'GNG2 - Duración de la atención',
-       'CTRIMP': 'GNG2 - Control de la Impulsividad'}
+       'CTRIMP': 'GNG2 - Control de la impulsividad'}
 
 
 bc2g = {'AVRRSG': ['Globos', 2],
@@ -155,3 +155,35 @@ bc2g = {'AVRRSG': ['Globos', 2],
         'MULTIV': ['Dados', 3],
         'CAPATC': ['Semáforo', 2],
         'CTRIMP': ['Semáforo', 2]}
+
+hg2c = {'Globos': [2, ['AVRRSG']],
+        'Dilema': [3, ['ALTRU']],
+        'Recarga': [4, ['PRPDIF', 'EFRTRS']],
+        'Casino': [3, ['DCSINC', '76A100']],
+        'Memoria': [5, ['ADBLSP']],
+        'Colores': [3, ['ACRTTL', 'TMPRES']],
+        'Emociones': [3, ['EMOTOT']],
+        'Personalidad': [10, ['APERT', 'EXTRA', 'CORDI', 'ESCRU', 'HONES', 'EMOCI']],
+        'Números': [3, ['NUMTOT']],
+        'Torres': [5, ['EXTPLN', 'CAPPLN']],
+        'Letras': [3, ['LETTOT']],
+        'Lógica': [3, ['LOGTOT']],
+        'Dados': [3, ['ACRSWT', 'MULTIV']],
+        'Semáforo': [2, ['CAPATC', 'CTRIMP']]}
+
+bg2c = {'Globos': [2, ['AVRRSG']],
+        'Dilema': [3, ['ALTRU']],
+        'Recarga': [4, ['PRPDIF', 'EFRTRS']],
+        'Casino': [3, ['DCSINC', '76A100']],
+        'Memoria': [5, ['ADBLSP']],
+        'Colores': [3, ['ACRTTL', 'TMPRES']],
+        'Emociones': [3, ['EMOTOT']],
+        'Personalidad': [10, ['AMABI', 'APERT', 'EXTRA', 'NEURO', 'RESPO']],
+        'Números': [3, ['NUMTOT']],
+        'Torres': [5, ['EXTPLN', 'CAPPLN']],
+        'Letras': [3, ['LETTOT']],
+        'Lógica': [3, ['LOGTOT']],
+        'Dados': [3, ['ACRSWT', 'MULTIV']],
+        'Semáforo': [2, ['CAPATC', 'CTRIMP']]}
+
+
