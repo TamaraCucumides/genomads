@@ -1,10 +1,15 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from plotly import graph_objects as go
+from plotly.graph_objs import Layout
+import plotly.express as px
 import seaborn as sns
 
-from genomaviz._utils import *
+import shap
 
+from genomaviz._utils import *
+from genomaviz.colors import *
 
 def correlation_plot(data, des, corrs_number=None, partition_corrs=2, thresh=0, method="spearman", activity_code = True, figsize=(12,8)):
     """
@@ -87,6 +92,19 @@ def correlation_plot(data, des, corrs_number=None, partition_corrs=2, thresh=0, 
     sns.barplot(x=cold_corrs,y=x, color=paleta_corrs[2])
     sns.barplot(x=verycold_corrs,y=x, color=paleta_corrs[3])
 
+    
+def funnel_plot(values=[], labels=[], **kwargs):
+    fig = go.Figure(go.Funnel(
+        y = labels,
+        x = values, marker = {"color": palette,
+        "line": {"width": [1,1,1,1,1], "color": palette}},
+        textinfo = "value+percent initial"),
+        layout = Layout(
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)'))
+    return fig
+
+
 def correlation_matrix(data, triangle=False, figsize=(10,8)):
     """
     :param data: dataframe con las variables a correlacionar
@@ -104,4 +122,154 @@ def binned_boxplot(data, x, y, num_bins=4):
     q1,q2,q3 = data[x].quantile([0.25,0.5,0.75])
     quartile = data.apply(lambda row: _quartilize_col(row, q1, q2, q3), axis=1)
     #TODO: plot and annotate bins, add custom amount of bins
-    pass 
+    pass
+    
+
+def freq_matrix(x, y, data):
+    """ TODO: Agregar fila de totales
+    Matriz de frecuencia para dos variables
+    :param x: nombre columna 1
+    :type x: str
+    :param y: nombre columna 2
+    :type y: str
+    :param data: dataframe con columnas a cruzar
+    :type data: pandas DataFrame
+    """
+    matrix = pd.DataFrame()
+    for xi in data[x].unique():
+        count = pd.DataFrame(pd.Series(data.loc[data[x]==xi][y].value_counts(), name=xi))
+        matrix = pd.concat([matrix, count], axis=1)
+    matrix = matrix.fillna(0)
+    return matrix
+
+def stacked_barplot(data, stack_by, x = None, y = None, order = []):
+    """
+    data : la data como df
+    x : variable opcional (para apilar solo vertical)
+    y : variable opcional (para apilar solo horizontal)
+    stack_by : la variable con la que se agrupan las barras (como un groupby)
+    order : por si quieres que vayan con orden especifico las barras,
+        es una lista de strings con los valores unicos de la variable
+        stack_by (algo como ["nivel1", "nivel2", ...])
+
+    returns : plot
+    """
+    df_dict = {}
+    concat_list = []
+    
+    if not x:
+        x = y
+
+    if order:
+        for unique in order:
+            df_dict[unique] = data.loc[data[x] == unique]
+            df_dict[unique][str(unique)] = data[x].map(lambda x: 100/df_dict[unique].shape[0])
+            df_dict[unique] = df_dict[unique].groupby(stack_by).sum().reset_index()
+            concat_list.append(df_dict[unique][str(unique)])
+            
+    else:   
+        for unique in data[x].unique():
+            df_dict[unique] = data.loc[data[x] == unique]
+            df_dict[unique][str(unique)] = data[x].map(lambda x: 100/df_dict[unique].shape[0])
+            df_dict[unique] = df_dict[unique].groupby(stack_by).sum().reset_index()
+            concat_list.append(df_dict[unique][str(unique)])
+        
+    pls = pd.concat(concat_list, axis = 1)
+
+    for i in range(1, pls.shape[0]):
+        pls.iloc[i] = pls.iloc[i]+pls.iloc[i-1]
+
+    if y:
+        for i in range(pls.shape[0], 0, -1):
+            pls2 = pls.iloc[i-1]
+            ax4 = sns.barplot(y=pls2.index, x=pls2.values, color = saturated_palette[i-1])
+
+        plt.xticks(ticks=[0,20,40,60,80,100], labels=["0%","20%","40%","60%","80%","100%"])
+    elif x:
+        for i in range(pls.shape[0], 0, -1):
+            pls2 = pls.iloc[i-1]
+            ax4 = sns.barplot(x=pls2.index, y=pls2.values, color = saturated_palette[i-1])
+
+        plt.yticks(ticks=[0,20,40,60,80,100], labels=["0%","20%","40%","60%","80%","100%"])      
+        
+    #plt.show()
+
+def stacked_kdeplot(x, group_by, data, palette=saturated_palette, order=None, legend=True, **kwargs):
+    """ Graficos de densidad para múltiples clases
+    
+    :param x: Variable para comparar
+    :type x: str
+    :param group_by: Variable para separar clases
+    :type group_by: str
+    :param data: dataframe con los datos
+    :type data: pandas DataFrame
+    :param palette: paleta de colores, en hexa
+    :type palette: list
+    :param order: orden de las clases, por defecto: df[group_by].unique()
+    :type order: list
+    :param legend: True para mostrar leyendas de acuerdo a parametro order
+    :type legend: bool
+    :param kwargs: Argumentos opcionales para sns.kdeplot()
+    :type kwargs: **kwargs
+    """
+    color = 0
+    if not order:
+        order = list(data[group_by].unique())
+    for cls in order:
+        sns.kdeplot(x=x, data=data.loc[data[group_by]==cls], color=palette[color], **kwargs)
+        color += 1
+        if color > 5:
+            color = 0
+    if legend:
+        plt.legend(order)
+
+
+def ABS_SHAP(df_shap, df):
+    #import matplotlib as plt
+    # Make a copy of the input data
+    
+    for col in df.columns:
+        try:
+            df = df.rename({col: c2t[col][7:]}, axis=1)
+
+        except:
+            try:
+                if col == "Exp laboral banca":
+                    df = df.rename({col: "Antes de trabajar en Fundación Génesis Empresarial,\n¿tenías experiencia laboral en banca o microfinanzas?"}, axis=1)
+                elif col == "Exp laboral":
+                    df = df.rename({col: "Antes de trabajar en Fundación Génesis Empresarial,\n¿tenías experiencia laboral?"}, axis=1)
+            except:
+                pass
+
+    
+    shap_v = pd.DataFrame(df_shap)
+    feature_list = df.columns
+    shap_v.columns = feature_list
+    df_v = df.copy().reset_index().drop('index',axis=1)
+    
+    # Determine the correlation in order to plot with different colors
+    corr_list = list()
+    for i in feature_list:
+        b = np.corrcoef(shap_v[i].astype(float), df_v[i].astype(float))[1][0]
+        corr_list.append(b)
+    corr_df = pd.concat([pd.Series(feature_list),pd.Series(corr_list)],
+                        axis=1).fillna(0)
+
+    # Make a data frame. Column 1 is the feature, and Column 2 is the 
+    # correlation coefficient
+    corr_df.columns  = ['Variable','Corr']
+    corr_df['Sign'] = np.where(corr_df['Corr']>0,'#8080ff', '#ff66b3')
+    
+    # Plot it
+    shap_abs = np.abs(shap_v)
+    k=pd.DataFrame(shap_abs.mean()).reset_index()
+    k.columns = ['Variable','SHAP_abs']
+    k2 = k.merge(corr_df, left_on = 'Variable',
+                 right_on='Variable', how='inner')
+    k2 = k2.sort_values(by='SHAP_abs', ascending = True)
+    colorlist = k2['Sign']
+    ax = k2.plot.barh(x='Variable', y='SHAP_abs', color = colorlist, 
+                      figsize=(5,6), legend=False)
+    ax.set_xlabel("SHAP Value (Impacto positivo en azul)")
+    
+    return k2
