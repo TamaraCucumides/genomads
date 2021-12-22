@@ -3,7 +3,7 @@ from setuptools import find_packages, setup
 setup(
     name='genomaviz',
     packages=find_packages(include=['genomaviz']),
-    version='0.1.0',
+    version='0.1.1',
     description='Python library for Genomawork visualizations',
     author='Tamara Cucumides - Pablo Larrea',
     license='MIT',
