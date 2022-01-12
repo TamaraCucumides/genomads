@@ -10,7 +10,7 @@ class Polinomio():
         total_weight=0
         for key in {**self.capacities_thresh_cog, **self.capacities_thresh_pol}.keys():
             total_weight += {**self.capacities_thresh_cog, **self.capacities_thresh_pol}[key]["weight"]
-        if int(total_weight*100) < 100:
+        if int(total_weight*100) != 100:
             warnings.warn(
                 "Variable weights add up to {}%".format(int(total_weight*100)),
                 UserWarning)
