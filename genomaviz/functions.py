@@ -11,6 +11,7 @@ import shap
 from genomaviz._utils import *
 from genomaviz.colors import *
 
+
 def correlation_plot(data, des, corrs_number=None, partition_corrs=2, thresh=0, method="spearman", activity_code = True):
     """
     :param data: dataframe con las variables a correlacionar
@@ -91,6 +92,7 @@ def correlation_plot(data, des, corrs_number=None, partition_corrs=2, thresh=0, 
     sns.barplot(x=cold_corrs,y=x, color=paleta_corrs[2])
     sns.barplot(x=verycold_corrs,y=x, color=paleta_corrs[3])
 
+
 def funnel_plot(values=[], labels=[], **kwargs):
     fig = go.Figure(go.Funnel(
         y = labels,
@@ -101,6 +103,7 @@ def funnel_plot(values=[], labels=[], **kwargs):
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)'))
     return fig
+
 
 def correlation_matrix(data, triangle=False):
     """
@@ -140,57 +143,101 @@ def freq_matrix(x, y, data):
     matrix = matrix.fillna(0)
     return matrix
 
-def stacked_barplot(data, stack_by, x = None, y = None, order = []):
+# """ [DEPRECATED]
+# def stacked_barplot(data, stack_by, x = None, y = None, order = [], palette=saturated_palette):
+#     """
+#     data : la data como df
+#     x : variable opcional (para apilar solo vertical)
+#     y : variable opcional (para apilar solo horizontal)
+#     stack_by : la variable con la que se agrupan las barras (como un groupby)
+#     order : por si quieres que vayan con orden especifico las barras,
+#         es una lista de strings con los valores unicos de la variable
+#         stack_by (algo como ["nivel1", "nivel2", ...])
+
+#     returns : plot
+#     """
+#     df_dict = {}
+#     concat_list = []
+    
+#     if not x:
+#         x = y
+
+#     if order:
+#         for unique in order:
+#             df_dict[unique] = data.loc[data[x] == unique]
+#             df_dict[unique][str(unique)] = data[x].map(lambda x: 100/df_dict[unique].shape[0])
+#             df_dict[unique] = df_dict[unique].groupby(stack_by).sum().reset_index()
+#             concat_list.append(df_dict[unique][str(unique)])
+            
+#     else:   
+#         for unique in data[x].unique():
+#             df_dict[unique] = data.loc[data[x] == unique]
+#             df_dict[unique][str(unique)] = data[x].map(lambda x: 100/df_dict[unique].shape[0])
+#             df_dict[unique] = df_dict[unique].groupby(stack_by).sum().reset_index()
+#             concat_list.append(df_dict[unique][str(unique)])
+        
+#     pls = pd.concat(concat_list, axis = 1)
+
+#     for i in range(1, pls.shape[0]):
+#         pls.iloc[i] = pls.iloc[i]+pls.iloc[i-1]
+
+#     if y:
+#         for i in range(pls.shape[0], 0, -1):
+#             pls2 = pls.iloc[i-1]
+#             ax4 = sns.barplot(y=pls2.index, x=pls2.values, color = palette[i-1])
+
+#         plt.xticks(ticks=[0,20,40,60,80,100], labels=["0%","20%","40%","60%","80%","100%"])
+#     elif x:
+#         for i in range(pls.shape[0], 0, -1):
+#             pls2 = pls.iloc[i-1]
+#             ax4 = sns.barplot(x=pls2.index, y=pls2.values, color = palette[i-1])
+
+#         plt.yticks(ticks=[0,20,40,60,80,100], labels=["0%","20%","40%","60%","80%","100%"])      
+        
+#     #plt.show()
+# """
+
+
+def stacked_barplot(data, stack_by, x = None, y = None, stack_order = [], bar_order=[], palette=saturated_palette):
     """
     data : la data como df
     x : variable opcional (para apilar solo vertical)
     y : variable opcional (para apilar solo horizontal)
     stack_by : la variable con la que se agrupan las barras (como un groupby)
-    order : por si quieres que vayan con orden especifico las barras,
+    stack_order : por si quieres que vayan con orden especifico las barras,
         es una lista de strings con los valores unicos de la variable
         stack_by (algo como ["nivel1", "nivel2", ...])
 
     returns : plot
     """
-    df_dict = {}
-    concat_list = []
+    if not bar_order:
+        bar_order = x.unique()
+        
+    if not stack_order:
+        stack_order = stack_by.unique()
+        
+    plot_data = pd.DataFrame()
+
+    for bar in bar_order:
+        bar_data = data.copy()
+        bar_data = bar_data.loc[bar_data[x]==bar]
+        bar_data = bar_data[[x, stack_by]]
+        percentage = {st:bar_data.loc[bar_data[stack_by]==st].shape[0]/bar_data.shape[0]*100 for st in stack_order}
+        percentage_data=pd.DataFrame(percentage.values(), columns=["%"])
+        percentage_data[stack_by]=stack_order
+        percentage_data[x]=bar
+        for row in range(1, percentage_data.shape[0]):
+            percentage_data["%"].iloc[row] += percentage_data["%"].iloc[row-1]
+        plot_data = pd.concat([plot_data, percentage_data], ignore_index=True)
     
-    if not x:
-        x = y
+    for n, v in reversed(list(enumerate(stack_order))):
+        if n > len(palette):
+            color = n - len(palette)
+        else:
+            color = n
+        sns.barplot(data=plot_data.loc[plot_data[stack_by]==stack_order[n]],
+                    x = x, y="%", color=palette[color])
 
-    if order:
-        for unique in order:
-            df_dict[unique] = data.loc[data[x] == unique]
-            df_dict[unique][str(unique)] = data[x].map(lambda x: 100/df_dict[unique].shape[0])
-            df_dict[unique] = df_dict[unique].groupby(stack_by).sum().reset_index()
-            concat_list.append(df_dict[unique][str(unique)])
-            
-    else:   
-        for unique in data[x].unique():
-            df_dict[unique] = data.loc[data[x] == unique]
-            df_dict[unique][str(unique)] = data[x].map(lambda x: 100/df_dict[unique].shape[0])
-            df_dict[unique] = df_dict[unique].groupby(stack_by).sum().reset_index()
-            concat_list.append(df_dict[unique][str(unique)])
-        
-    pls = pd.concat(concat_list, axis = 1)
-
-    for i in range(1, pls.shape[0]):
-        pls.iloc[i] = pls.iloc[i]+pls.iloc[i-1]
-
-    if y:
-        for i in range(pls.shape[0], 0, -1):
-            pls2 = pls.iloc[i-1]
-            ax4 = sns.barplot(y=pls2.index, x=pls2.values, color = saturated_palette[i-1])
-
-        plt.xticks(ticks=[0,20,40,60,80,100], labels=["0%","20%","40%","60%","80%","100%"])
-    elif x:
-        for i in range(pls.shape[0], 0, -1):
-            pls2 = pls.iloc[i-1]
-            ax4 = sns.barplot(x=pls2.index, y=pls2.values, color = saturated_palette[i-1])
-
-        plt.yticks(ticks=[0,20,40,60,80,100], labels=["0%","20%","40%","60%","80%","100%"])      
-        
-    #plt.show()
 
 def stacked_kdeplot(x, group_by, data, palette=saturated_palette, order=None, legend=True, **kwargs):
     """ Graficos de densidad para múltiples clases
@@ -271,3 +318,8 @@ def ABS_SHAP(df_shap, df):
     ax.set_xlabel("SHAP Value (Impacto positivo en azul)")
     
     return k2
+
+
+def gender_plot(data, x, palette=palette):
+    data.dropna(subset=[x]).loc[data[x] != "Genero no válido"][x].value_counts().plot.pie(autopct='%1.1f%%', colors = palette)
+    plt.ylabel("")

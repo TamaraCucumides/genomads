@@ -186,4 +186,5 @@ bg2c = {'Globos': [2, ['AVRRSG']],
         'Dados': [3, ['ACRSWT', 'MULTIV']],
         'Semáforo': [2, ['CAPATC', 'CTRIMP']]}
 
-
+gamez = ["Semáforo", "Dados"]
+print(sum([t[0] for g,t in bg2c.items() if g in gamez]))
