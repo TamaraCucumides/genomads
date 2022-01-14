@@ -1,6 +1,5 @@
 import warnings
 import genomaviz.colors
-
 class Polinomio():
     
     def __init__(self, cog={}, pol={}):
@@ -10,7 +9,7 @@ class Polinomio():
         total_weight=0
         for key in {**self.capacities_thresh_cog, **self.capacities_thresh_pol}.keys():
             total_weight += {**self.capacities_thresh_cog, **self.capacities_thresh_pol}[key]["weight"]
-        if int(total_weight*100) < 100:
+        if int(total_weight*100) != 100:
             warnings.warn(
                 "Variable weights add up to {}%".format(int(total_weight*100)),
                 UserWarning)
@@ -45,19 +44,21 @@ class Polinomio():
             return score_modifier(score_cap)
     
 
-    def predict(self, data, out_var, print_results=False):
+    def predict(self, data, out_var, print_results=False, score_modifier=None):
         self.edd = []
         self.fit = []
+        
         if print_results:
             print("{0: >8} | {1: >8}".format("Real", "Fit Pred"))
-        for i in range(data.shape[0]):
-
+            
+        for i in range(data.shape[0]): 
+            score = self.calculate_score(data.iloc[i], score_modifier)
             if print_results:
-                print("{0: >8} | {1: >8}".format(int(data.iloc[i][out_var]), self.calculate_score(data.iloc[i])))
+                print("{0: >8} | {1: >8}".format(int(data.iloc[i][out_var]), score))
             self.edd.append(int(data.iloc[i][out_var]))
-            self.fit.append(self.calculate_score(data.iloc[i]))
+            self.fit.append(score)
         
-
+        
     def prediction_plot(self, palette=saturated_palette, xlines=[0.5,1.5], ylines=[60,85]):
         sns.scatterplot(x=self.edd, y=self.fit, color=palette[0])
         if (len(xlines) > 3) or (len(ylines) > 3):

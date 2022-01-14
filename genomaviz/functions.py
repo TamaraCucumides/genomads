@@ -214,7 +214,7 @@ def stacked_barplot(data, stack_by, x = None, y = None, stack_order = [], bar_or
         bar_order = x.unique()
         
     if not stack_order:
-        stack_order = stack_by.unique()
+        stack_order = data[stack_by].unique()
         
     plot_data = pd.DataFrame()
 
