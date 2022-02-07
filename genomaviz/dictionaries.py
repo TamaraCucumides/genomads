@@ -185,5 +185,3 @@ bg2c = {'Globos': [2, ['AVRRSG']],
         'Lógica': [3, ['LOGTOT']],
         'Dados': [3, ['ACRSWT', 'MULTIV']],
         'Semáforo': [2, ['CAPATC', 'CTRIMP']]}
-
-
