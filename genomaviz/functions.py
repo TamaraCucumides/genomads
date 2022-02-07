@@ -11,7 +11,6 @@ import shap
 from genomaviz._utils import *
 from genomaviz.colors import *
 
-
 def correlation_plot(data, des, corrs_number=None, partition_corrs=2, thresh=0, method="spearman", activity_code = True):
     """
     :param data: dataframe con las variables a correlacionar
@@ -76,23 +75,24 @@ def correlation_plot(data, des, corrs_number=None, partition_corrs=2, thresh=0, 
     x = rasgos_pos + rasgos_neg[::-1]
 
     if not activity_code:
-        try:
+        return None #fix this with dicts
+    """    try:
             for trait in range(len(x)):
                 if x[trait] in t2c.keys():
                     x[trait] = x[trait][7:]
         except:
-            pass
+            pass """
 
     sns.axes_style('white')
     sns.set_style('white')
 
-    fig = plt.figure(figsize=(12,10))
+    fig = plt.figure(figsize=figsize)
     b = sns.barplot(x=veryhot_corrs,y=x,color=paleta_corrs[0])
     sns.barplot(x=hot_corrs,y=x, color=paleta_corrs[1])
     sns.barplot(x=cold_corrs,y=x, color=paleta_corrs[2])
     sns.barplot(x=verycold_corrs,y=x, color=paleta_corrs[3])
 
-
+    
 def funnel_plot(values=[], labels=[], **kwargs):
     fig = go.Figure(go.Funnel(
         y = labels,
@@ -112,10 +112,9 @@ def correlation_matrix(data, triangle=False):
     :param triangle: booleano que indica si la quieres triangular o completa
     :type data: boolean
     """
-    f, ax = plt.subplots(figsize=(10, 8))
+    f, ax = plt.subplots(figsize=figsize)
     corr = data.corr()
     sns.heatmap(corr, cmap=sns.diverging_palette(0, 255, as_cmap=True), square=True, ax=ax, annot=True)
-    plt.show()
     #TODO: add triangle mode
 
 
