@@ -93,7 +93,7 @@ def correlation_plot(data, des, corrs_number=None, partition_corrs=2, thresh=0, 
     sns.barplot(x=verycold_corrs,y=x, color=paleta_corrs[3])
 
 
-def funnel_plot(values=[], labels=[], **kwargs):
+def funnel_plot(values=[], labels=[], palette=palette, **kwargs):
     fig = go.Figure(go.Funnel(
         y = labels,
         x = values, marker = {"color": palette,
@@ -211,7 +211,7 @@ def stacked_barplot(data, stack_by, x = None, y = None, stack_order = [], bar_or
     returns : plot
     """
     if not bar_order:
-        bar_order = x.unique()
+        bar_order = data[x].unique()
         
     if not stack_order:
         stack_order = data[stack_by].unique()

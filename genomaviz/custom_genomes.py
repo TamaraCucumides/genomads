@@ -1,5 +1,5 @@
 import warnings
-import genomaviz.colors
+from genomaviz.colors import saturated_palette
 class Polinomio():
     
     def __init__(self, cog={}, pol={}):
