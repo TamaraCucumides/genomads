@@ -11,6 +11,7 @@ import shap
 from genomaviz._utils import *
 from genomaviz.colors import *
 
+# TODO: DROP CLASES CON POCA REPRESENTACION
 def correlation_plot(data, des, corrs_number=None, partition_corrs=2, thresh=0, method="spearman", activity_code = True):
     """
     :param data: dataframe con las variables a correlacionar
@@ -86,7 +87,6 @@ def correlation_plot(data, des, corrs_number=None, partition_corrs=2, thresh=0, 
     sns.axes_style('white')
     sns.set_style('white')
 
-    fig = plt.figure(figsize=figsize)
     b = sns.barplot(x=veryhot_corrs,y=x,color=paleta_corrs[0])
     sns.barplot(x=hot_corrs,y=x, color=paleta_corrs[1])
     sns.barplot(x=cold_corrs,y=x, color=paleta_corrs[2])
@@ -197,7 +197,7 @@ def freq_matrix(x, y, data):
 # """
 
 
-def stacked_barplot(data, stack_by, x = None, y = None, stack_order = [], bar_order=[], palette=saturated_palette):
+def stacked_barplot(data, stack_by, x = None, y = None, stack_order = [], bar_order=[], palette=palette):
     """
     data : la data como df
     x : variable opcional (para apilar solo vertical)
